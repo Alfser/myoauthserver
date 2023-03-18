@@ -1,5 +1,7 @@
 package com.example.myoauthserver.config;
 
+import java.time.Duration;
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.context.annotation.Bean;
@@ -19,10 +21,12 @@ import org.springframework.security.oauth2.server.authorization.config.annotatio
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2AuthorizationServerConfigurer;
 import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
 import org.springframework.security.oauth2.server.authorization.settings.ClientSettings;
+import org.springframework.security.oauth2.server.authorization.settings.TokenSettings;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 
 import com.example.myoauthserver.config.keys.KeyManager;
+import com.example.myoauthserver.config.properties.AuthProperties;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
@@ -58,7 +62,7 @@ public class AuthServerConfig {
 
     @Bean
 	public RegisteredClientRepository registeredClientRepository() {
-		RegisteredClient registeredClient = RegisteredClient.withId(UUID.randomUUID().toString())
+		RegisteredClient defaultClient = RegisteredClient.withId(UUID.randomUUID().toString())
 				.clientId("client")
 				.clientSecret("secret")
 				.clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
@@ -67,15 +71,48 @@ public class AuthServerConfig {
 				.authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
                 .redirectUri("http://spring.io/auth")
 				.scope(OidcScopes.PROFILE)
-				.clientSettings(ClientSettings.builder().requireAuthorizationConsent(true).build())
-				.build();
+				.scope(OidcScopes.OPENID)
+				.tokenSettings(
+					TokenSettings.builder()
+					.accessTokenTimeToLive(Duration.ofHours(1))
+					.build()
+				)
+				.clientSettings(
+					ClientSettings.builder()
+					.requireAuthorizationConsent(true)
+					.build()
+				).build();
 
-		return new InMemoryRegisteredClientRepository(registeredClient);
+				RegisteredClient backendClient = RegisteredClient.withId(UUID.randomUUID().toString())
+				.clientId("backend")
+				.clientSecret("backendsecret")
+				.clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
+				.authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
+                .redirectUri("http://spring.io/auth")
+				.scope("user:read")
+				.scope("user:write")
+				.tokenSettings(
+					TokenSettings.builder()
+					.accessTokenTimeToLive(Duration.ofHours(1))
+					.build()
+				)
+				.clientSettings(
+					ClientSettings.builder()
+					.requireAuthorizationConsent(false)
+					.build()
+				).build();
+
+
+		return new InMemoryRegisteredClientRepository(
+			List.of(defaultClient, backendClient)
+		);
 	}
 
     @Bean
-	public AuthorizationServerSettings authorizationServerSettings() {
-		return AuthorizationServerSettings.builder().build();
+	public AuthorizationServerSettings authorizationServerSettings(AuthProperties authProperties) {
+		return AuthorizationServerSettings.builder()
+				.issuer(authProperties.getProviderUriIssuer())
+				.build();
 	}
 
     @Bean
