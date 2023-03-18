@@ -68,13 +68,15 @@ public class AuthServerConfig {
 				.clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
 				.authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
 				.authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
-				.authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
-                .redirectUri("http://spring.io/auth")
+                .redirectUri("https://spring.io/auth")
 				.scope(OidcScopes.PROFILE)
 				.scope(OidcScopes.OPENID)
+				.scope("user:read")
 				.tokenSettings(
 					TokenSettings.builder()
-					.accessTokenTimeToLive(Duration.ofHours(1))
+					.accessTokenTimeToLive(Duration.ofMinutes(15))
+					.refreshTokenTimeToLive(Duration.ofHours(5))
+					.reuseRefreshTokens(false)
 					.build()
 				)
 				.clientSettings(
