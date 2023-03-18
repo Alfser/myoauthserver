@@ -45,9 +45,6 @@ public class SecurityConfig {
 	@Bean
 	public UserDetailsService userDetailsService() {
 		UserModel user = new UserModel();
-		user.setName("admin");
-		user.setEmail("admin@gmail.com");
-		user.setPassword(passwordEncoder().encode("123456"));
 		userService.create(user);
 		return userService;
 	}
