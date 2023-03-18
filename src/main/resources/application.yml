@@ -1,0 +1,29 @@
+
+logging:
+    level: 
+        '[org.hibernate.stat]': debug
+
+spring:
+    #DEVTOOLS
+    devtools:
+        add-properties: true
+    # Database
+    datasource:
+        driver-class-name: org.postgresql.Driver
+        url: jdbc:postgresql://localhost:5432/authserverdb
+        username: alfser
+        password: sistemas@mttpocos
+
+    jpa:
+        database: postgresql
+        database-platform: org.hibernate.dialect.PostgreSQLDialect
+        show-sql: true
+        generate-ddl: true
+        hibernate:
+            ddl-auto: update
+            naming:
+                physical-strategy : org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+        properties:
+            '[hibernate.format_sql]' : true
+            '[hibernate.generate_statistics]' : true
+            '[persistence.schema-generation.scripts.create-target]' : create.sql
