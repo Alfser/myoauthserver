@@ -10,14 +10,9 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.jwt.JwtDecoder;
-import org.springframework.security.oauth2.server.authorization.config.annotation.web.configuration.OAuth2AuthorizationServerConfiguration;
 import org.springframework.security.web.SecurityFilterChain;
 
-import com.example.myoauthserver.model.UserModel;
 import com.example.myoauthserver.service.UserService;
-import com.nimbusds.jose.jwk.source.JWKSource;
-import com.nimbusds.jose.proc.SecurityContext;
 
 import lombok.RequiredArgsConstructor;
 
@@ -30,22 +25,17 @@ public class SecurityConfig {
 	@Bean
 	public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http)
 			throws Exception {
-        http
+        return http
                 .authorizeHttpRequests((authorize) -> authorize
                                 .anyRequest().authenticated()
                 )
                 // Form login handles the redirect to the login page from the
                 // authorization server filter chain
-                .formLogin(Customizer.withDefaults())
-                .anonymous(anonymous -> anonymous.disable());
-			
-		return http.build();
+                .formLogin(Customizer.withDefaults()).build();
 	}
 
 	@Bean
 	public UserDetailsService userDetailsService() {
-		UserModel user = new UserModel();
-		userService.create(user);
 		return userService;
 	}
 
@@ -61,11 +51,5 @@ public class SecurityConfig {
     public PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
     }
-
-	@Bean
-	public JwtDecoder jwtDecoder(JWKSource<SecurityContext> jwkSource) {
-		return OAuth2AuthorizationServerConfiguration.jwtDecoder(jwkSource);
-	}
-
 }
 
