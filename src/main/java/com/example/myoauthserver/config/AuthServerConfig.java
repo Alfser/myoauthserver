@@ -77,6 +77,7 @@ public class AuthServerConfig {
 		http
 			.securityMatcher(endpointsMatcher)
 			.authorizeHttpRequests((authorize) -> authorize
+				.requestMatchers("/users/register").permitAll()
 				.anyRequest().authenticated()
 			)
 			.csrf(csrf -> csrf.ignoringRequestMatchers(endpointsMatcher))
@@ -133,18 +134,17 @@ public class AuthServerConfig {
 
 		// RegisteredClient registeredClient =            
         // RegisteredClient.withId(UUID.randomUUID().toString())
-        // .clientId("alfser")
+        // .clientId("owner")
         // .clientSecret(encoder.encode("123456"))
         // .clientAuthenticationMethod(
         //     ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
         // .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
         // .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
-        // .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
         // .redirectUri("http://127.0.0.1:8080/authorized")
         // .scope(OidcScopes.OPENID)
         // .scope(OidcScopes.PROFILE)
-        // .scope("message.read")
-        // .scope("message.write")
+        // .scope("client.create")
+		// .scope("client.read")
         // .clientSettings(
         //     ClientSettings.builder()
         //     .requireAuthorizationConsent(true).build())
@@ -181,6 +181,7 @@ public class AuthServerConfig {
 	public AuthorizationServerSettings authorizationServerSettings(AuthProperties authProperties) {
 		return AuthorizationServerSettings.builder()
 				.issuer(authProperties.getProviderUriIssuer())
+				.oidcClientRegistrationEndpoint("/connect/register")
 				.build();
 	}
 
