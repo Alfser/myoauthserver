@@ -15,10 +15,14 @@ import lombok.RequiredArgsConstructor;
 public class OidcUserInfoService {
 
 	private final UserRepository userRepository;
-	private final Map<String, Object> userInfo = new HashMap<>();
 
 	public OidcUserInfo loadUser(String username) {
-		userInfo.put(username, this.userRepository.findByEmail(username).orElseThrow());
-		return new OidcUserInfo(userInfo);
+		var currentUser = this.userRepository.findByEmail(username).orElseThrow();
+		return OidcUserInfo.builder()
+			.name(currentUser.getName())
+			.subject(username)
+			.email(currentUser.getEmail())
+			.emailVerified(true)
+			.build();
 	}
 }

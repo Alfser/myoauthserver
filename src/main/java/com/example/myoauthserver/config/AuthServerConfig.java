@@ -37,6 +37,7 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 
 import com.example.myoauthserver.config.keys.KeyManager;
 import com.example.myoauthserver.config.properties.AuthProperties;
+import com.example.myoauthserver.service.OidcUserInfoService;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
@@ -49,6 +50,7 @@ import lombok.RequiredArgsConstructor;
 public class AuthServerConfig {
 
     private final KeyManager keyManager;
+	private final OidcUserInfoService userInfoService;
 
     @Bean
 	@Order(Ordered.HIGHEST_PRECEDENCE)
@@ -62,7 +64,7 @@ public class AuthServerConfig {
 			OidcUserInfoAuthenticationToken authentication = context.getAuthentication();
 			JwtAuthenticationToken principal = (JwtAuthenticationToken) authentication.getPrincipal();
 
-			return new OidcUserInfo(principal.getToken().getClaims());
+			return userInfoService.loadUser(principal.getName());
 		};
 
 		authorizationServerConfigurer
