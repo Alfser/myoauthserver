@@ -19,7 +19,8 @@ public class TokenCustomizerConfig {
 		return (context) -> {
 			if (OidcParameterNames.ID_TOKEN.equals(context.getTokenType().getValue())) {
 				OidcUserInfo userInfo = userInfoService.loadUser( 
-						context.getPrincipal().getName());
+						context.getPrincipal().getName()
+					);
 				context.getClaims().claims(claims ->
 						claims.putAll(userInfo.getClaims()));
 			}
