@@ -28,4 +28,7 @@ spring:
         
 myoauth2:
     auth: 
-        provider-uri-issuer: "http://127.0.0.1:8080"
+        provider-uri-issuer: "http://127.0.0.1:8090"
+server:
+  port: 8090
+        
