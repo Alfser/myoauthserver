@@ -1,8 +1,5 @@
 package com.example.myoauthserver.service;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
 import org.springframework.stereotype.Service;
 
